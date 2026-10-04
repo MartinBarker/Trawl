@@ -11,6 +11,7 @@ const {
   exchangeCodeAndStore,
   hasYouTubeTokens,
   getYouTubeChannel,
+  disconnectYouTube,
   listPlaylists,
   getSavedPlaylist,
   pushPendingToPlaylist,
@@ -169,6 +170,18 @@ function createApiServer({ discordClient = null } = {}) {
       console.error('GET /api/scans/:id/youtube/playlists failed:', err);
       res.status(info.reason === 'quotaExceeded' ? 429 : 500)
         .json({ error: info.reason, message: info.message });
+    }
+  });
+
+  // Sign out of YouTube: revoke the grant at Google and forget the stored token.
+  // Scheduled auto-add runs for this user stop working until they reconnect.
+  app.post('/api/scans/:id/youtube/disconnect', verifyMagicToken, async (req, res) => {
+    try {
+      const removed = await disconnectYouTube(req.discordUserId);
+      res.json({ ok: true, removed });
+    } catch (err) {
+      console.error('POST /api/scans/:id/youtube/disconnect failed:', err);
+      res.status(500).json({ error: 'internal error' });
     }
   });
 

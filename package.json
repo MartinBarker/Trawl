@@ -1,6 +1,6 @@
 {
   "name": "trawl",
-  "version": "1.0.9",
+  "version": "1.1.0",
   "main": "index.js",
   "scripts": {
     "deploy": "node deploy_discord_commands.js",

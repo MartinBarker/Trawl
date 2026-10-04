@@ -1,4 +1,4 @@
-// /schedule — turn an existing scan into a recurring job. The cadence is stored
+// /trawl-schedule — turn an existing scan into a recurring job. The cadence is stored
 // on scan_jobs.cron_expression and registered with the DB-persisted scheduler,
 // so it survives restarts.
 const { SlashCommandBuilder, ChannelType } = require('discord.js');
@@ -15,8 +15,8 @@ const PRESETS = {
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('schedule')
-    .setDescription('Auto-run /makeplaylists for a channel on a recurring schedule')
+    .setName('trawl-schedule')
+    .setDescription('Auto-run /trawl-makeplaylists for a channel on a recurring schedule')
     .addChannelOption(o =>
       o.setName('input_channel')
         .setDescription('The channel to re-scan')
@@ -51,7 +51,7 @@ module.exports = {
     );
     if (rows.length === 0) {
       return interaction.reply({
-        content: `No scan exists for ${inputChannel}. Run \`/makeplaylists\` first.`,
+        content: `No scan exists for ${inputChannel}. Run \`/trawl-makeplaylists\` first.`,
         ephemeral: true,
       });
     }

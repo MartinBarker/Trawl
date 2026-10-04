@@ -1,0 +1,4 @@
+# Store and check out text files with LF so edits from Windows and WSL don't
+# show up as whole-file diffs.
+* text=auto eol=lf
+*.png binary

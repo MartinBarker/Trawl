@@ -2,7 +2,7 @@
 
 A Discord bot that scrapes music links (YouTube, Spotify, SoundCloud, Bandcamp) from Discord channels, deduplicates them, and generates YouTube playlists. Supports scheduled auto-runs via cron and syncs directly to YouTube playlists via the YouTube Data API.
 
-> **Deploying this bot?** All deployment, infrastructure, and end-user workflow docs live in the martinbarker.me repo at [`discord2playlist_deploy_guide.md`](https://github.com/MartinBarker/martinbarker.me/blob/main/discord2playlist_deploy_guide.md). That guide covers AWS ECS + RDS setup, the magic-link user flow, retry behavior, and the `/schedule` command. **This README is local-dev only.**
+> **Deploying this bot?** All deployment, infrastructure, and end-user workflow docs live in the martinbarker.me repo at [`discord2playlist_deploy_guide.md`](https://github.com/MartinBarker/martinbarker.me/blob/main/discord2playlist_deploy_guide.md). That guide covers AWS ECS + RDS setup, the magic-link user flow, retry behavior, and the `/trawl-schedule` command. **This README is local-dev only.**
 
 ---
 
@@ -60,30 +60,20 @@ Without `DATABASE_URL`, the bot falls back to the JSON-file behavior documented 
 
 ## Discord Commands
 
-```
-/makeplaylists input_channel:#music-share output_channel:#debug_out save_json:True repeat:0 0 */3 * *
-```
-
-That command:
-- Fetches every message from `input_channel` with media links (YouTube/Bandcamp/SoundCloud/Spotify).
-- Saves the links to a local JSON file (same directory where `npm start` was run) — or to the `extracted_links` Postgres table if `DATABASE_URL` is set.
-- Posts bot output to `output_channel`.
-- Repeats based on the cron expression (`0 0 */3 * *` = every 3 days).
-
-Hourly variant:
-
-```
-/makeplaylists input_channel:#music-share output_channel:#debug_out save_json:True repeat:0 * * * *
-```
-
-After the command runs, you'll have `input_channel_name.json` (or DB rows) with all extracted links.
-
-Other commands:
+All commands are prefixed with `trawl-`, so typing `/trawl` in Discord lists them all.
 
 | Command | Purpose |
 |---|---|
-| `/stop` | Cancel a repeating scan for a channel pair |
-| `/version` | Print the bot's running version |
+| `/trawl-makeplaylists [input_channel] [output_channel]` | Scan a channel for music links (YouTube/Spotify/SoundCloud/Bandcamp), save them to Postgres, and post a magic link to the results page where you can push them to a YouTube playlist |
+| `/trawl-schedule input_channel cadence` | Re-run a channel's scan hourly / every 6h / daily / weekly (or `off`) and auto-push new links to YouTube |
+| `/trawl-stop` | Stop all scheduled scans in this server |
+| `/trawl-version` | Print the bot's running version |
+
+Example:
+
+```
+/trawl-makeplaylists input_channel:#music-share output_channel:#debug_out
+```
 
 ---
 
@@ -96,9 +86,10 @@ Other commands:
 ├── add_to_youtube_playlist.js    # one-shot: read JSON, push to YouTube
 ├── youtube-sync-scheduler.js     # standalone cron wrapper around the above
 ├── commands/
-│   ├── makePlaylists.js          # /makeplaylists handler
-│   ├── stop.js                   # /stop handler
-│   └── version.js                # /version handler
+│   ├── makePlaylists.js          # /trawl-makeplaylists handler
+│   ├── schedule.js               # /trawl-schedule handler
+│   ├── stop.js                   # /trawl-stop handler
+│   └── version.js                # /trawl-version handler
 ├── db/
 │   ├── schema.sql                # Postgres schema (guilds, scan_jobs, etc.)
 │   ├── migrate.js                # applies schema.sql
@@ -110,4 +101,4 @@ Other commands:
 
 ---
 
-For everything else — production deployment, CI/CD, the web magic-link flow, retry behavior, and the `/schedule` command — see the **[deploy guide in martinbarker.me](https://github.com/MartinBarker/martinbarker.me/blob/main/discord2playlist_deploy_guide.md)**.
+For everything else — production deployment, CI/CD, the web magic-link flow, retry behavior, and the `/trawl-schedule` command — see the **[deploy guide in martinbarker.me](https://github.com/MartinBarker/martinbarker.me/blob/main/discord2playlist_deploy_guide.md)**.
