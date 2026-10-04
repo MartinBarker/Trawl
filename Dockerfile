@@ -14,7 +14,6 @@ RUN npm ci --omit=dev
 # Copy application source
 COPY start_discord_bot.js ./
 COPY deploy_discord_commands.js ./
-COPY add_to_youtube_playlist.js ./
 COPY youtube-sync-scheduler.js ./
 COPY commands/ ./commands/
 COPY db/ ./db/
