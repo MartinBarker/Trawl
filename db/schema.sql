@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS guilds (
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Scan jobs: each /makeplaylists run creates or updates one of these
+-- Scan jobs: each /trawl-makeplaylists run creates or updates one of these
 CREATE TABLE IF NOT EXISTS scan_jobs (
     id                  SERIAL PRIMARY KEY,
     guild_id            TEXT NOT NULL REFERENCES guilds(guild_id) ON DELETE CASCADE,

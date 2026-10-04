@@ -1,4 +1,4 @@
-// /makeplaylists — scan a channel, persist every music link to Postgres, and
+// /trawl-makeplaylists — scan a channel, persist every music link to Postgres, and
 // post a signed magic link to the results page on martinbarker.me where the
 // user can connect YouTube and push the tracks to their own playlist.
 const { SlashCommandBuilder, ChannelType } = require('discord.js');
@@ -7,7 +7,7 @@ const { issueMagicToken } = require('../lib/magicToken');
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('makeplaylists')
+    .setName('trawl-makeplaylists')
     .setDescription('Scan a channel for music links and get a link to add them to a YouTube playlist')
     .addChannelOption(o =>
       o.setName('input_channel')
@@ -69,7 +69,7 @@ module.exports = {
         `Posted the results link in ${outputChannel}.`
       );
     } catch (err) {
-      console.error('/makeplaylists failed:', err);
+      console.error('/trawl-makeplaylists failed:', err);
       await interaction.editReply(`Scan failed: ${err.message}`);
     }
   },

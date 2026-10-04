@@ -4,7 +4,7 @@ const path = require('path');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('version')
+        .setName('trawl-version')
         .setDescription('Display the current bot version'),
     async execute(interaction) {
         try {

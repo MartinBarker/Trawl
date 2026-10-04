@@ -1,4 +1,4 @@
-// /stop — disable all scheduled scans in this server. Clears the cron on each
+// /trawl-stop — disable all scheduled scans in this server. Clears the cron on each
 // scan_job and unregisters it from the scheduler.
 const { SlashCommandBuilder } = require('discord.js');
 const db = require('../db');
@@ -6,7 +6,7 @@ const { rescheduleJob } = require('../lib/scheduler');
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('stop')
+    .setName('trawl-stop')
     .setDescription('Stop all scheduled scans in this server'),
 
   async execute(interaction) {
