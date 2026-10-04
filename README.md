@@ -2,8 +2,6 @@
 
 A Discord bot that scrapes music links (YouTube, Spotify, SoundCloud, Bandcamp) from Discord channels, deduplicates them, and generates YouTube playlists. Supports scheduled auto-runs via cron and syncs directly to YouTube playlists via the YouTube Data API.
 
-> **Deploying this bot?** All deployment, infrastructure, and end-user workflow docs live in the martinbarker.me repo at [`discord2playlist_deploy_guide.md`](https://github.com/MartinBarker/martinbarker.me/blob/main/discord2playlist_deploy_guide.md). That guide covers AWS ECS + RDS setup, the magic-link user flow, retry behavior, and the `/trawl-schedule` command. **This README is local-dev only.**
-
 ---
 
 ## Table of Contents
