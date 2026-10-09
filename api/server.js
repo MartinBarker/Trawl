@@ -13,6 +13,7 @@ const {
   getYouTubeChannel,
   disconnectYouTube,
   listPlaylists,
+  getOwnedPlaylist,
   getSavedPlaylist,
   pushPendingToPlaylist,
   classifyError,
@@ -162,7 +163,9 @@ function createApiServer({ discordClient = null } = {}) {
   // instead of always creating a new playlist.
   app.get('/api/scans/:id/youtube/playlists', verifyMagicToken, async (req, res) => {
     try {
-      const playlists = await listPlaylists(req.discordUserId);
+      // All pages, not the default 5: with only 250 the picker silently hid
+      // the rest, including same-named playlists the user was looking for.
+      const playlists = await listPlaylists(req.discordUserId, { maxPages: 100 });
       if (playlists === null) return res.status(409).json({ error: 'no_youtube' });
       res.json({ playlists, channel: await getYouTubeChannel(req.discordUserId) });
     } catch (err) {
@@ -170,6 +173,23 @@ function createApiServer({ discordClient = null } = {}) {
       console.error('GET /api/scans/:id/youtube/playlists failed:', err);
       res.status(info.reason === 'quotaExceeded' ? 429 : 500)
         .json({ error: info.reason, message: info.message });
+    }
+  });
+
+  // One playlist by id, for the "paste a playlist link or ID" box. 404 when it
+  // doesn't exist, 403 when it belongs to another channel.
+  app.get('/api/scans/:id/youtube/playlists/:playlistId', verifyMagicToken, async (req, res) => {
+    try {
+      const playlist = await getOwnedPlaylist(req.discordUserId, String(req.params.playlistId));
+      if (playlist === null) return res.status(409).json({ error: 'no_youtube' });
+      res.json({ playlist });
+    } catch (err) {
+      const info = classifyError(err);
+      const status = info.reason === 'playlistNotFound' ? 404
+        : info.reason === 'playlistItemsNotAccessible' ? 403
+          : info.reason === 'quotaExceeded' ? 429 : 500;
+      if (status === 500) console.error('GET /api/scans/:id/youtube/playlists/:playlistId failed:', err);
+      res.status(status).json({ error: info.reason, message: info.message });
     }
   });
 
